@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 from itertools import tee
 
 def read_input(relative_file) -> List[str]:
     path = Path(relative_file).parent / "input"
     with path.open() as f:
-        return [line for line in f]
+        return [line.strip() for line in f]
 
 def pairwise(seq):
     a, b = tee(seq)
@@ -18,3 +18,6 @@ def triwise(seq):
     next(c)
     next(c)
     return zip(a, b, c)
+
+def boollist2int(l: List[bool]):
+    return sum(2**i for i, v in enumerate(reversed(l)) if v)
