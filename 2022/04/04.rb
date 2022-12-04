@@ -19,7 +19,7 @@ ARGF.readlines.map(&:strip).lazy.map do |line|
       .map(&:to_i)
       .each_slice(2)
       .map { |start, finish| start..finish }
-      .sort{ |rng_1, rng_2| range_sorter(rng_1, rng_2) }
+      .sort { |rng_1, rng_2| range_sorter(rng_1, rng_2) }
 end.each do |elf_1, elf_2|
   cover_count += 1 if elf_1.cover?(elf_2)
   overlap_count += 1 if elf_1.include?(elf_2.first)

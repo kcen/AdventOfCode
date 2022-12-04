@@ -27,7 +27,6 @@ def points(them, me)
   end
 end
 
-res = ARGF.readlines.map(&:split)
-          .map { |them, me| points(them, me) }
+res = ARGF.readlines.map(&:split).lazy.map { |them, me| points(them, me) }
 
 puts res.sum
