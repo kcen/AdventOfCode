@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-base_dir=$(dirname $(realpath $0))
-[ -z "$AOC_INPUT" ] && AOC_INPUT=$base_dir/input
-ruby $base_dir/01.rb $AOC_INPUT
+BASE_DIR=$(dirname $(realpath $0))
+[ -z "$1" ] && AOC_INPUT="$1"
+[ -z "$AOC_INPUT" ] && AOC_INPUT="${BASE_DIR}"/input
+ruby "${BASE_DIR}"/01.rb "${AOC_INPUT}"
