@@ -17,7 +17,7 @@ class ShippingYard
 
   def _parse_yard(yard_str)
     yard_str.split("\n")[0..-2].map do|row|
-        row.chars.
+        row.ljust(9*4, ' ').chars.
             each_slice(4).
             map { |x| x[1][/[A-Z]/] }
     end.transpose.map(&:reverse).map(&:compact)
