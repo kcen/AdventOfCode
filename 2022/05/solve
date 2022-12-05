@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+class ShippingYard
+  attr_accessor :yard, :rev
+
+  def initialize(yard_str, is_9000 = true)
+    self.rev = is_9000
+    self.yard = _parse_yard(yard_str)
+  end
+
+  def do_move(move)
+    qty, from, to = _parse_move(move)
+    moved = yard[from - 1].pop(qty)
+    moved.reverse! if self.rev == true
+    yard[to - 1].push(*moved)
+  end
+
+  def _parse_yard(yard_str)
+    yard_str.split("\n")[0..-2].map do|row|
+        row.chars.
+            each_slice(4).
+            map { |x| x[1][/[A-Z]/] }
+    end.transpose.map(&:reverse).map(&:compact)
+  end
+
+  def _parse_move(move)
+    move.match(/move (\d+) from (\d+) to (\d+)/).captures.map(&:to_i)
+  end
+end
+
+yard_str, moves_str = ARGF.read.split("\n\n")
+yard = ShippingYard.new(yard_str)
+yard2 = ShippingYard.new(yard_str, is_9000 = false)
+moves_str.strip
+    .split("\n")
+    .each do |move|
+        yard.do_move(move)
+        yard2.do_move(move)
+    end
+puts yard.yard.map(&:last).join
+puts yard2.yard.map(&:last).join
