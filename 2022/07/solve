@@ -23,9 +23,9 @@ input.each do |line|
     when /^\$ ls/
         next
     when /dir (.+)/
-        cwd.contents["#{$1}"] ||= FS::Directory.new("#{$1}",cwd, {})
+        cwd.contents["#{$1}"] ||= FS::Directory.new("#{$1}",cwd,{})
     when /(\d+) (.+)/
-        cwd.contents["#{$2}"] ||= FS::File.new("#{$2}", "#{$1}".to_i)
+        cwd.contents["#{$2}"] ||= FS::File.new("#{$2}","#{$1}".to_i)
     else
         raise 'Unhandled'
     end
