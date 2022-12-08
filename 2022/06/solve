@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 input = ARGF.read.chars
-unique = ->(x, y){x == x.uniq}
-decode_at = ->(inp,at){ inp.each_cons(at).each_with_index.select(&unique)[0] }
-code, c_index = decode_at.(input, 4)
-message, m_index = decode_at.(input, 14)
+unique = ->(x, _y) { x == x.uniq }
+decode_at = ->(inp, at) { inp.each_cons(at).each_with_index.select(&unique)[0] }
+code, c_index = decode_at.call(input, 4)
+message, m_index = decode_at.call(input, 14)
 puts c_index + code.length, m_index + message.length
