@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+require 'matrix'
+
+input = ARGF.readlines.map(&:strip).map(&:chars)
+
+Tree = Struct.new(:height, :visible, :distances) do
+  def add_direction; distances.prepend(0); end
+  def inc_direction; distances[0] += 1; end
+  def view_score; distances.inject(&:*); end
+end
+
+grid = Matrix.rows(input).map { |e| Tree.new(e.to_i, false, []) }
+
+def mark_trees_visible(vec)
+  vec.each_with_object(-1) do |tree, max_height|
+    if tree.height > max_height
+      tree.visible = true
+      max_height = tree.height
+    end
+  end
+end
+
+def add_distances(vec)
+  vec.inject([]) do |short_list, this_tree|
+    this_tree.add_direction
+    short_list.each { |tree| tree.inc_direction }
+              .filter { |tree| tree.height > this_tree.height }
+              .append(this_tree)
+  end
+end
+
+[*grid.row_vectors, *grid.column_vectors].each do |row_col|
+  [row_col,row_col.reverse_each].each do |direction|
+    mark_trees_visible(direction)
+    add_distances(direction)
+  end
+end
+
+puts grid.count(&:visible)
+puts grid.map(&:view_score).max
