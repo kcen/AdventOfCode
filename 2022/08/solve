@@ -11,28 +11,22 @@ end
 
 grid = Matrix.rows(input).map { |e| Tree.new(e.to_i, false, []) }
 
-def mark_trees_visible(vec)
-  vec.each_with_object(-1) do |tree, max_height|
-    if tree.height > max_height
+def update(vec)
+  vec.each_with_object({short: [], max: -1}) do |tree, opts|
+    if tree.height > opts[:max]
       tree.visible = true
-      max_height = tree.height
+      opts[:max] = tree.height
     end
-  end
-end
-
-def add_distances(vec)
-  vec.inject([]) do |short_list, this_tree|
-    this_tree.add_direction
-    short_list.each { |tree| tree.inc_direction }
-              .filter { |tree| tree.height > this_tree.height }
-              .append(this_tree)
+    tree.add_direction
+    opts[:short].each(&:inc_direction)
+    opts[:short].filter! { |t| t.height > tree.height }
+    opts[:short].append(tree)
   end
 end
 
 [*grid.row_vectors, *grid.column_vectors].each do |row_col|
   [row_col,row_col.reverse_each].each do |direction|
-    mark_trees_visible(direction)
-    add_distances(direction)
+    update(direction)
   end
 end
 
