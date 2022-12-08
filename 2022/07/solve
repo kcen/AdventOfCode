@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+input = ARGF.readlines.map(&:strip)
+
+# Filesystem
+module FS
+    Directory = Struct.new(:name, :parent, :contents)
+    File = Struct.new(:name, :size)
+end
+root = FS::Directory.new('/', nil, {})
+
+# Session
+cwd = root
+
+# Commands
+input.each do |line|
+    case line
+    when /^\$ cd \/$/
+        cwd = root
+    when /^\$ cd \.\./
+        cwd = cwd.parent
+    when /^\$ cd (.+)/
+        cwd = cwd.contents["#{$1}"]
+    when /^\$ ls/
+        next
+    when /dir (.+)/
+        cwd.contents["#{$1}"] ||= FS::Directory.new("#{$1}",cwd, {})
+    when /(\d+) (.+)/
+        cwd.contents["#{$2}"] ||= FS::File.new("#{$2}", "#{$1}".to_i)
+    else
+        raise 'Unhandled'
+    end
+end
+
+
+def dir_subdir_sizes(name, directory)
+    Enumerator.new do |yielder|
+        size = 0
+        directory.contents.each do |name, item|
+            case item
+            when FS::Directory
+                size += dir_subdir_sizes(name, item).map do |dir_name, dir_size|
+                    yielder << [dir_name, dir_size]
+                    dir_size
+                end.last
+            when FS::File
+                size += item.size
+            end
+        end
+        yielder << [name, size]
+    end
+end
+
+sizes = dir_subdir_sizes('/', root).map(&:last)
+
+# Part 1
+puts sizes.filter{|size| size <= 100_000}.sum
+# Part 2
+puts sizes.filter{|size| size > sizes.last + 30_000_000 - 70_000_000}.min
