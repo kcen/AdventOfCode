@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'rubocop', '~> 1.39', require: false
+gem 'rubocop', require: false
+gem 'solargraph', require: false
+gem 'pry'

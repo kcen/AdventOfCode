@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'matrix'
+require "matrix"
 
 input = ARGF.readlines.map(&:strip).map(&:chars)
 
@@ -12,7 +12,7 @@ end
 grid = Matrix.rows(input).map { |e| Tree.new(e.to_i, false, []) }
 
 def update(vec)
-  vec.each_with_object({short: [], max: -1}) do |tree, opts|
+  vec.each_with_object({ short: [], max: -1 }) do |tree, opts|
     if tree.height > opts[:max]
       tree.visible = true
       opts[:max] = tree.height
@@ -25,12 +25,12 @@ def update(vec)
 end
 
 [*grid.row_vectors, *grid.column_vectors].each do |row_col|
-  [row_col,row_col.reverse_each].each do |direction|
+  [row_col, row_col.reverse_each].each do |direction|
     update(direction)
   end
 end
 
 puts "{\"part_one\":%d,\"part_two\":%d}" % [
   grid.count(&:visible),
-  grid.map(&:view_score).max
+  grid.map(&:view_score).max,
 ]

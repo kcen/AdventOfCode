@@ -17,7 +17,7 @@ class ShippingYard
 
   def _parse_yard(yard_str)
     yard_str.lines[0..-2].map do |row|
-      row.ljust(9 * 4, ' ').chars
+      row.ljust(9 * 4, " ").chars
          .each_slice(4)
          .map { |x| x[1][/\S/] }
     end.transpose.map(&:reverse).map(&:compact)
@@ -31,12 +31,11 @@ end
 yard_str, moves_str = ARGF.read.split("\n\n")
 yard = ShippingYard.new(yard_str)
 yard2 = ShippingYard.new(yard_str, is_9000 = false)
-moves_str.lines
-         .each do |move|
+moves_str.lines.each do |move|
   yard.do_move(move)
   yard2.do_move(move)
 end
 puts "{\"part_one\":\"%s\",\"part_two\":\"%s\"}" % [
   yard.yard.map(&:last).join,
-  yard2.yard.map(&:last).join
+  yard2.yard.map(&:last).join,
 ]

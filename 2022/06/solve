@@ -5,6 +5,6 @@ decode_at = ->(inp, at) { inp.each_cons(at).each_with_index.select(&unique)[0] }
 code, c_index = decode_at.call(input, 4)
 message, m_index = decode_at.call(input, 14)
 puts "{\"part_one\":%d,\"part_two\":%d}" % [
-    c_index + code.length,
-    m_index + message.length
+  c_index + code.length,
+  m_index + message.length,
 ]
