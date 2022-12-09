@@ -2,5 +2,6 @@
 BASE_DIR=$(dirname $(realpath $0))
 [ -z "$1" ] && AOC_INPUT="$1"
 [ -z "$AOC_INPUT" ] && AOC_INPUT="${BASE_DIR}"/input
-ruby "${BASE_DIR}"/03_1.rb "${AOC_INPUT}"
-ruby "${BASE_DIR}"/03_2.rb "${AOC_INPUT}"
+RES1=$(ruby "${BASE_DIR}"/03_1.rb "${AOC_INPUT}")
+RES2=$(ruby "${BASE_DIR}"/03_2.rb "${AOC_INPUT}")
+echo "{\"part_one\":${RES1},\"part_two\":${RES2}}"

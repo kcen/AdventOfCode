@@ -16,6 +16,5 @@ BEGIN { FS="[,-]" }
     }
 }
 END {
-    print cover
-    print include
+    print "{\"part_one\":" cover ",\"part_two\":" include "}"
 }

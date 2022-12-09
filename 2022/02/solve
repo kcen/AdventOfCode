@@ -29,6 +29,5 @@ BEGIN {
     sum_b += b[$0]
 }
 END {
-    print sum_a
-    print sum_b
+    print "{\"part_one\":" sum_a ",\"part_two\":" sum_b "}"
 }

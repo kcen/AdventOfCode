@@ -30,5 +30,7 @@ end
   end
 end
 
-puts grid.count(&:visible)
-puts grid.map(&:view_score).max
+puts "{\"part_one\":%d,\"part_two\":%d}" % [
+  grid.count(&:visible),
+  grid.map(&:view_score).max
+]

@@ -36,5 +36,7 @@ moves_str.lines
   yard.do_move(move)
   yard2.do_move(move)
 end
-puts yard.yard.map(&:last).join
-puts yard2.yard.map(&:last).join
+puts "{\"part_one\":\"%s\",\"part_two\":\"%s\"}" % [
+  yard.yard.map(&:last).join,
+  yard2.yard.map(&:last).join
+]

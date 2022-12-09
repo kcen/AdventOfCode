@@ -52,7 +52,7 @@ end
 
 sizes = dir_subdir_sizes('/', root).map(&:last)
 
-# Part 1
-puts sizes.filter{|size| size <= 100_000}.sum
-# Part 2
-puts sizes.filter{|size| size > sizes.last + 30_000_000 - 70_000_000}.min
+puts "{\"part_one\":%d,\"part_two\":%d}" % [
+    sizes.filter{|size| size <= 100_000}.sum,
+    sizes.filter{|size| size > sizes.last + 30_000_000 - 70_000_000}.min
+]
