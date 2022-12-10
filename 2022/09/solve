@@ -6,49 +6,52 @@ input = ARGF.readlines.map do |line|
   [$1, $2.to_i]
 end
 
-@tail_visited = Set.new
+class Knot
+  attr_accessor :x, :y, :tail, :obs, :visited
 
-@head = { x: 0, y: 0 }
-@tail = { x: 0, y: 0 }
+  def initialize
+    @x, @y = 0, 0
+    @visited = Set.new
+  end
 
-def sign(n); n <=> 0; end
-
-def update_head(direction, distance)
-  distance.times do
-    case direction
-    when "U"
-      @head[:y] += 1
-    when "D"
-      @head[:y] -= 1
-    when "L"
-      @head[:x] -= 1
-    when "R"
-      @head[:x] += 1
+  def move!(direction, distance)
+    distance.times do
+      case direction
+      when "U"; @y += 1
+      when "D"; @y -= 1
+      when "L"; @x -= 1
+      when "R"; @x += 1
+      end
+      @tail.follow(self) if @tail
     end
-    update_tail
+  end
+
+  def follow(parent)
+    dist_x = parent.x - @x
+    dist_y = parent.y - @y
+    if dist_x ** 2 + dist_y ** 2 > 2
+      @x += dist_x <=> 0
+      @y += dist_y <=> 0
+    end
+    @visited.add [x, y].join(",") if @obs
+    tail.follow(self) if @tail
   end
 end
 
-def update_tail
-  dist_x = @head[:x] - @tail[:x]
-  dist_y = @head[:y] - @tail[:y]
-  case [dist_x, dist_y].map(&:abs)
-  when [2, 0]
-    @tail[:x] += sign(dist_x)
-  when [0, 2]
-    @tail[:y] += sign(dist_y)
-  when [2, 1], [1, 2]
-    @tail[:x] += sign(dist_x)
-    @tail[:y] += sign(dist_y)
-  end
-  @tail_visited.add @tail.values_at(:x, :y).join(",")
+# Rope
+def make_rope(length, obs = [])
+  rope = length.times
+    .map { |i| Knot.new }
+    .each_cons(2) { |t, h| h.tail = t }
+  tails = rope.values_at(*obs).each { |k| k.obs = true }
+  [rope, rope[-1], *tails]
 end
+
+length = 10
+rope, head, *tails = make_rope(length, [-2, -length])
 
 input.each do |direction, distance|
-  update_head(direction, distance)
+  head.move!(direction, distance)
 end
 
-puts "{\"part_one\":%d,\"part_two\":%d}" % [
-  @tail_visited.count,
-  0,
-]
+puts "{\"part_one\":%d,\"part_two\":%d}" % tails.map { |t| t.visited.count }
