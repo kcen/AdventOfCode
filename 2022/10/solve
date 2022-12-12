@@ -6,17 +6,16 @@ end
 
 CPU = Struct.new(:cycle, :register, :strength, :crt) do
   def tick
-    self.cycle += 1
     c40 = cycle % 40
-
-    strength << cycle * register if c40 == 20
-
-    sprite = (c40 - 2)..(c40)
+    sprite = (c40 - 1)..(c40 + 1)
     if sprite.include? register
       crt << "#"
     else
       crt << "."
     end
+    self.cycle += 1
+    c40 = cycle % 40
+    strength << cycle * register if c40 == 20 # Offest for 0 cycle
   end
 end
 
@@ -30,5 +29,7 @@ input.each do |cmd, val|
   end
 end
 
-puts "{\"part_one\":%d,\"part_two\":%d}" % [@cpu.strength.sum, nil.to_i]
-# @cpu.crt.each_slice(40).map { |l| puts l.to_a.join("") }
+pt1 = @cpu.strength.sum
+pt2 = @cpu.crt.each_slice(40).map { |l| l.to_a.join("") }.join("\n")
+
+puts "{\"part_one\":%d,\"part_two\":%s}" % [@cpu.strength.sum, pt2.inspect]
