@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+require "matrix"
+require "set"
+
+input = ARGF.readlines.map(&:strip).map(&:chars)
+
+class Map < Matrix
+  alias_method :at, :element
+
+  def neighbors(row, col)
+    [
+      [row, col + 1], [row - 1, col],
+      [row + 1, col], [row, col - 1],
+    ].filter do |new_row, new_col|
+      (0...row_count).include?(new_row) and
+      (0...column_count).include?(new_col)
+    end
+  end
+end
+
+Position = Struct.new(:h, :cost)
+
+@map = Map[*input].map { |e| Position.new(e, nil) }
+
+start = @map.index { |e| e.h == "S" }
+@map.at(*start).cost = 0
+@map.at(*start).h = "a"
+dest = @map.index { |e| e.h == "E" }
+@map.at(*dest).h = "z"
+
+@pathfinder = Queue.new
+@pathfinder.push start
+
+def run
+  while not @pathfinder.empty?
+    pos = @pathfinder.pop
+    el = @map.at(*pos)
+    step_cost = el.cost + 1
+    @map.neighbors(*pos).each do |nxt|
+      nxt_el = @map.at(*nxt)
+      next if nxt_el.h.ord > el.h.ord.next
+      nxt_cost = nxt_el.cost
+      if nxt_cost.nil? or nxt_cost > step_cost
+        nxt_el.cost = step_cost
+        @pathfinder.push(nxt)
+      end
+    end
+  end
+end
+
+# Pt1
+run()
+pt_1 = @map.at(*dest).cost
+
+# Pt2
+@map.each_with_index do |e, row, col|
+  if e.h == "a"
+    e.cost = 0
+    @pathfinder.push [row, col]
+  end
+end
+run()
+pt_2 = @map.at(*dest).cost
+
+puts "{\"part_one\":%d,\"part_two\":%d}" % [pt_1, pt_2]
