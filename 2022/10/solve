@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+input = ARGF.readlines.map do |line|
+  cmd, val = line.split(/\s/)
+  [cmd, val.to_i]
+end
+
+CPU = Struct.new(:cycle, :register, :strength, :crt) do
+  def tick
+    self.cycle += 1
+    c40 = cycle % 40
+
+    strength << cycle * register if c40 == 20
+
+    sprite = (c40 - 2)..(c40)
+    if sprite.include? register
+      crt << "#"
+    else
+      crt << "."
+    end
+  end
+end
+
+@cpu = CPU.new(0, 1, [], [])
+
+input.each do |cmd, val|
+  @cpu.tick
+  if cmd == "addx"
+    @cpu.tick
+    @cpu.register += val
+  end
+end
+
+# Part2
+puts "{\"part_one\":%d,\"part_two\":%d}" % [@cpu.strength.sum, nil]
+# Part2
+# @cpu.crt.each_slice(40).map { |l| puts l.to_a.join("") }
