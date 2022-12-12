@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+MONKEY_FORMAT = /Monkey (?<name>.{1}):
+  Starting items: (?<items>.{1,100})
+  Operation: new = (?<op_pre>.{1,4}) (?<op>.{1}) (?<op_suf>.{1,4})
+  Test: divisible by (?<test_mod>.{1,3})
+    If true: throw to monkey (?<test_t>.{1})
+    If false: throw to monkey (?<test_f>.{1})/m
+
+class Monkey
+  attr_accessor :items
+  attr_reader :name, :count_inspect, :test_mod
+
+  def operation(old)
+    @count_inspect += 1
+    _op_pre = @op_pre || old
+    _op_suf = @op_suf || old
+    _op_pre.send(@op_sym, _op_suf)
+  end
+
+  def test(testval)
+    testval % @test_mod == 0 ? @test_t : @test_f
+  end
+end
+
+def make_monkey(name, items, op_pre, op, op_suf, test_mod, test_t, test_f)
+  m = Monkey.new
+  {
+    "@name": name.to_i,
+    "@items": items.split(", ").map(&:to_i),
+    "@count_inspect": 0,
+    "@op_pre": op_pre.to_i.nonzero?,
+    "@op_suf": op_suf.to_i.nonzero?,
+    "@op_sym": op.to_sym,
+    "@test_mod": test_mod.to_i,
+    "@test_t": test_t.to_i,
+    "@test_f": test_f.to_i,
+  }.each do |name, val|
+    m.instance_variable_set(name, val)
+  end
+  m
+end
+
+def do_round(monkeys, mod_func)
+  monkeys.each do |monkey|
+    monkey.items.each do |i|
+      worry_level = i
+      worry_level = monkey.operation(worry_level)
+      worry_level = mod_func.call(worry_level)
+      test_res = monkey.test(worry_level)
+      monkeys[test_res].items << worry_level
+    end
+    monkey.items = []
+  end
+end
+
+input = ARGF.read
+# Part 1
+pt_1 = input.scan(MONKEY_FORMAT).map { |i| make_monkey(*i) }
+reducer1 = ->(x) { x / 3 }
+(1..20).each { do_round(pt_1, reducer1) }
+# Part 2
+pt_2 = input.scan(MONKEY_FORMAT).map { |i| make_monkey(*i) }
+denominator = pt_2.map(&:test_mod).inject(1, &:lcm)
+reducer2 = ->(x) { x % denominator }
+(1..10_000).each { do_round(pt_2, reducer2) }
+
+puts "{\"part_one\":%d,\"part_two\":%d}" % [pt_1, pt_2].map { |monkeys|
+  monkeys.map(&:count_inspect).max(2).inject(:*)
+}
