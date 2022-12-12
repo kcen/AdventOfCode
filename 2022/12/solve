@@ -14,52 +14,52 @@ class Map < Matrix
     ].filter do |new_row, new_col|
       (0...row_count).include?(new_row) and
       (0...column_count).include?(new_col)
+    end.map do |pos|
+      [pos, self.at(*pos)]
     end
   end
 end
 
 Position = Struct.new(:h, :cost)
 
-@map = Map[*input].map { |e| Position.new(e, nil) }
+SIGNAL_MAP = Map[*input].map { |e| Position.new(e, Float::INFINITY) }
 
-start = @map.index { |e| e.h == "S" }
-@map.at(*start).cost = 0
-@map.at(*start).h = "a"
-dest = @map.index { |e| e.h == "E" }
-@map.at(*dest).h = "z"
+start = SIGNAL_MAP.index { |e| e.h == "S" }
+SIGNAL_MAP.at(*start).cost = 0
+SIGNAL_MAP.at(*start).h = "a"
+dest = SIGNAL_MAP.index { |e| e.h == "E" }
+SIGNAL_MAP.at(*dest).h = "z"
 
 @pathfinder = Queue.new
-@pathfinder.push start
 
-def run
-  while not @pathfinder.empty?
-    pos = @pathfinder.pop
-    el = @map.at(*pos)
-    step_cost = el.cost + 1
-    @map.neighbors(*pos).each do |nxt|
-      nxt_el = @map.at(*nxt)
-      next if nxt_el.h.ord > el.h.ord.next
-      nxt_cost = nxt_el.cost
-      if nxt_cost.nil? or nxt_cost > step_cost
-        nxt_el.cost = step_cost
-        @pathfinder.push(nxt)
+@pathfinder.define_singleton_method(:run) do
+  while not self.empty?
+    this_pos = self.pop
+    this_element = SIGNAL_MAP.at(*this_pos)
+    step_cost = this_element.cost + 1
+    SIGNAL_MAP.neighbors(*this_pos).each do |next_pos, next_element|
+      next if next_element.h.ord > this_element.h.ord.next
+      if next_element.cost > step_cost
+        next_element.cost = step_cost
+        self.push(next_pos)
       end
     end
   end
 end
 
 # Pt1
-run()
-pt_1 = @map.at(*dest).cost
+@pathfinder.push start
+@pathfinder.run
+pt_1 = SIGNAL_MAP.at(*dest).cost
 
 # Pt2
-@map.each_with_index do |e, row, col|
+SIGNAL_MAP.each_with_index do |e, row, col|
   if e.h == "a"
     e.cost = 0
     @pathfinder.push [row, col]
   end
 end
-run()
-pt_2 = @map.at(*dest).cost
+@pathfinder.run
+pt_2 = SIGNAL_MAP.at(*dest).cost
 
 puts "{\"part_one\":%d,\"part_two\":%d}" % [pt_1, pt_2]
