@@ -30,5 +30,5 @@ input.each do |cmd, val|
   end
 end
 
-puts "{\"part_one\":%d,\"part_two\":%d}" % [@cpu.strength.sum, nil]
+puts "{\"part_one\":%d,\"part_two\":%d}" % [@cpu.strength.sum, nil.to_i]
 # @cpu.crt.each_slice(40).map { |l| puts l.to_a.join("") }
