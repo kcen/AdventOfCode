@@ -13,7 +13,7 @@ cover_count = 0
 # Part 2
 overlap_count = 0
 
-ARGF.readlines.map(&:strip).lazy.map do |line|
+ARGF.readlines(chomp: true).lazy.map do |line|
   # 33-62,26-62
   line.split(/[,-]/)
       .map(&:to_i)

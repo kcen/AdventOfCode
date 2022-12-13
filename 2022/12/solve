@@ -2,7 +2,7 @@
 require "matrix"
 require "set"
 
-input = ARGF.readlines.map(&:strip).map(&:chars)
+input = ARGF.readlines(chomp: true).map(&:chars)
 
 class Map < Matrix
   alias_method :at, :element

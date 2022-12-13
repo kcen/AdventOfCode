@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require "matrix"
 
-input = ARGF.readlines.map(&:strip).map(&:chars)
+input = ARGF.readlines(chomp: true).map(&:chars)
 
 Tree = Struct.new(:height, :visible, :distances) do
   def add_direction; distances.prepend(0); end
