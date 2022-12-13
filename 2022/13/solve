@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+require "json"
+input = ARGF.read.split("\n\n").map do |g|
+  g.split("\n").map { |l| JSON.parse l }
+end
+
+def coerce_list(i_or_l); i_or_l.is_a?(Integer) ? [i_or_l] : i_or_l; end
+
+# -1 == out of order, 0 == same, 1 == in order
+def compare(left, right)
+  return -1 if right.nil?
+  case [left.class, right.class]
+  when [Integer, Integer]
+    right <=> left
+  when [Array, Array]
+    big = (right.size > left.size ? 1 : 0)
+    left.zip(right).lazy.map { |l, r| compare(l, r) }.find(&:nonzero?) || big
+  else
+    compare(coerce_list(left), coerce_list(right))
+  end
+end
+
+pt_1 = input.each.with_index(1)
+  .filter { |v, _| compare(*v) == 1 }
+  .map(&:last).sum
+
+DIV = [[[2]], [[6]]]
+pt_2 = input.flatten(1).concat(DIV)
+  .sort { |left, right| compare(left, right) }.reverse!
+  .each.with_index(1).filter { |v, i| DIV.include? v }
+  .map(&:last).inject(:*)
+
+puts "{\"part_one\":%d,\"part_two\":%d}" % [pt_1, pt_2]
